@@ -6,11 +6,18 @@ module.exports = class ReplyBot {
     }
 
     start(imagePromiseCb, credits) {
+        this.bot.use((ctx, next) => {
+            const date = new Date(ctx.message.date * 1000);
+            console.log(`${ctx.message.from.first_name} (${ctx.message.from.id}) [${date.toISOString()}]: ${ctx.message.text}`);
+
+            return next(ctx);
+        });
+
         this.bot.start(this.opening);
         this.bot.help(this.opening);
 
         this.bot.hears(/(hello|hi)/i, this.opening);
-        this.bot.hears(/(yes|yeah|yep|sure|ok)/i, ctx => {
+        this.bot.hears(/(yes|yeah|yep|sure|ok|oki|okay)/i, ctx => {
             imagePromiseCb().then(picture => {
                 let loadingId;
 
