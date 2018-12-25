@@ -13,6 +13,5 @@ When you have both copy `config/default.json` to `config/local.json` and enter y
 You can now run `node index.js` and have fun with the doggos.
 
 ## License
-According to the [Pixabay terms of use](https://pixabay.com/api/docs/) all pictures are licensed
-under the CC0 license. But one has to contribute a link to Pixabay.
+According to the [Unsplash license](https://unsplash.com/license) all pictures are free to use.
 The bot itself is licensed under the MIT license. See LICENSE file.

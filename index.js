@@ -1,8 +1,8 @@
 const ReplyBot = require('./components/reply.bot');
-const PixabayApi = require('./components/image/pixabay.api');
+const UnsplashApi = require('./components/image/unsplash.api');
 const config = require('config');
 
 const telegram = new ReplyBot(config.get('telegram.bot_token'));
-const pixabay = new PixabayApi(config.get('pixabay.api_key'));
+const unsplash = new UnsplashApi();
 
-telegram.start(() => pixabay.getRandom(), pixabay.getCredits());
+telegram.start(() => unsplash.getRandom(), unsplash.getCredits());

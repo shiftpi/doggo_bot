@@ -21,7 +21,11 @@ module.exports = class ReplyBot {
             imagePromiseCb().then(picture => {
                 let loadingId;
 
-                ctx.replyWithMarkdown(credits, { disable_web_page_preview: true, disable_notification: true }).then(() => {
+                new Promise((resolve, reject) => resolve()).then(() => {
+                    if (credits) {
+                        return replyWithMarkdown(credits, { disable_web_page_preview: true, disable_notification: true });
+                    }
+                }).then(() => {
                         return ctx.reply('...', { disable_notification: true });
                     }).then(message => {
                         loadingId = message.message_id;
