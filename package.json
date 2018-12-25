@@ -1,0 +1,15 @@
+{
+  "name": "doggo-bot",
+  "version": "1.0.0",
+  "description": "@the_ultimate_doggo_bot on Telegram",
+  "main": "index.js",
+  "repository": "git@github.com:shiftpi/doggo_bot.git",
+  "author": "Andreas Rutz <andreas.rutz@posteo.de>",
+  "license": "MIT",
+  "dependencies": {
+    "config": "^3.0.1",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5",
+    "telegraf": "^3.25.5"
+  }
+}

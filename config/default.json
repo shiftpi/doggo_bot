@@ -1,0 +1,8 @@
+{
+  "telegram": {
+    "bot_token": ""
+  },
+  "pixabay": {
+    "api_key": ""
+  }
+}
