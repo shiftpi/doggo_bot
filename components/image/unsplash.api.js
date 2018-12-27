@@ -10,8 +10,4 @@ module.exports = class UnsplashApi extends ImageApi {
             simple: false
         }).then(response => response.headers.location);
     }
-
-    getCredits() {
-        return null;
-    }
 };

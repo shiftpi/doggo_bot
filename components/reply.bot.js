@@ -5,43 +5,50 @@ module.exports = class ReplyBot {
         this.bot = new Telegraf(botToken);
     }
 
-    start(imagePromiseCb, credits) {
+    start(imagePromiseCb, textRecogCb) {
         this.bot.use((ctx, next) => {
-            const date = new Date(ctx.message.date * 1000);
-            console.log(`${ctx.message.from.first_name} (${ctx.message.from.id}) [${date.toISOString()}]: ${ctx.message.text}`);
+            return textRecogCb(ctx.message.text).then(score => {
+                const date = new Date(ctx.message.date * 1000);
+                console.log(`${ctx.message.from.first_name} (${ctx.message.from.id}) [${date.toISOString()}] `
+                    + `[Happy score: ${score}]: ${ctx.message.text}`);
 
-            return next(ctx);
+                ctx.happyScore = score;
+
+                return next(ctx);
+            });
         });
 
         this.bot.start(this.opening);
         this.bot.help(this.opening);
-
         this.bot.hears(/(hello|hi)/i, this.opening);
-        this.bot.hears(/(yes|yeah|yep|sure|ok|oki|okay)/i, ctx => {
-            imagePromiseCb().then(picture => {
-                let loadingId;
 
-                new Promise((resolve, reject) => resolve()).then(() => {
-                    if (credits) {
-                        return replyWithMarkdown(credits, { disable_web_page_preview: true, disable_notification: true });
-                    }
-                }).then(() => {
-                        return ctx.reply('...', { disable_notification: true });
-                    }).then(message => {
-                        loadingId = message.message_id;
-                        return ctx.replyWithPhoto({ url: picture }, { caption: 'Isn\'t that a cute one? Wanna have another?' });
-                    }).then(() => {
-                        ctx.deleteMessage(loadingId);
-                    });
+        this.bot.hears(/.*/, ctx => {
+            ctx.reply(`I think with ${Math.round(ctx.happyScore * 100)}% certainty you are happy`).then(() => {
+                if (ctx.happyScore < 0.33) {
+                    ctx.reply('How bad. Do you give me another chance');
+                } else if (ctx.happyScore < 0.66) {
+                    ctx.reply('You\'re not happy as any cute doggo. Do you give me another chance?');
+                } else {
+                    ctx.reply('Yeay, you cute doggo lover... Here is one');
+                    this.sendPicture(imagePromiseCb, ctx);
+                }
             });
         });
-        this.bot.hears(/(no|'nope)/i, ctx => ctx.reply('Oh now so sad. What about now?'));
-        this.bot.hears(/.*/, ctx => ctx.reply('What did you say?'));
 
         this.bot.startPolling();
     }
 
     opening(ctx) {
         ctx.reply('Hello human, may I show you some cute doggos?');
+    }
+
+    sendPicture(cb, ctx) {
+        let loadingId;
+
+        ctx.reply('...', { disable_notification: true })
+            .then(message => loadingId = message.message_id)
+            .then(() => cb())
+            .then(picture => ctx.replyWithPhoto({ url: picture }, { caption: 'Isn\'t that a cute one?' }))
+            .then(() => ctx.deleteMessage(loadingId));
     }
 };

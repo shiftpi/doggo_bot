@@ -1,5 +1,9 @@
 {
   "telegram": {
     "bot_token": ""
+  },
+  "azure": {
+    "region": "westeurope.api.cognitive.microsoft.com",
+    "key": ""
   }
 }
