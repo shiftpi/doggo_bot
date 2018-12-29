@@ -26,16 +26,14 @@ module.exports = class ReplyBot {
         this.bot.hears(/(hello|hi)/i, this.opening);
 
         this.bot.hears(/.*/, ctx => {
-            ctx.reply(`I think with ${Math.round(ctx.happyScore * 100)}% certainty you are happy`).then(() => {
-                if (ctx.happyScore < 0.33) {
-                    ctx.reply('How bad. Do you give me another chance');
-                } else if (ctx.happyScore < 0.66) {
-                    ctx.reply('You\'re not happy as any cute doggo. Do you give me another chance?');
-                } else {
-                    ctx.reply('Yeay, you cute doggo lover... Here is one');
-                    this.sendPicture(ctx.picSource, ctx);
-                }
-            });
+            if (ctx.happyScore < 0.33) {
+                ctx.reply('How bad. Do you give me another chance');
+            } else if (ctx.happyScore < 0.66) {
+                ctx.reply('You\'re not happy as any cute doggo. Do you give me another chance?');
+            } else {
+                ctx.reply('Yeay, you cute doggo lover... Here is one');
+                this.sendPicture(ctx.picSource, ctx);
+            }
         });
 
         this.bot.startPolling();
