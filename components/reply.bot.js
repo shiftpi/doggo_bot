@@ -1,18 +1,21 @@
 const Telegraf = require('telegraf');
+const ImageApi = require('./image/image.api');
 
 module.exports = class ReplyBot {
     constructor(botToken) {
         this.bot = new Telegraf(botToken);
     }
 
-    start(imagePromiseCb, textRecogCb) {
+    start(picSourceCb, textRecogCb) {
         this.bot.use((ctx, next) => {
             return textRecogCb(ctx.message.text).then(score => {
                 const date = new Date(ctx.message.date * 1000);
-                console.log(`${ctx.message.from.first_name} (${ctx.message.from.id}) [${date.toISOString()}] `
-                    + `[Happy score: ${score}]: ${ctx.message.text}`);
 
+                ctx.picSource = picSourceCb();
                 ctx.happyScore = score;
+
+                console.log(`${ctx.message.from.first_name} (${ctx.message.from.id}) [${date.toISOString()}] `
+                    + `[Happy score: ${score}] [Pic source: ${ctx.picSource.constructor.name}]: ${ctx.message.text}`);
 
                 return next(ctx);
             });
@@ -30,7 +33,7 @@ module.exports = class ReplyBot {
                     ctx.reply('You\'re not happy as any cute doggo. Do you give me another chance?');
                 } else {
                     ctx.reply('Yeay, you cute doggo lover... Here is one');
-                    this.sendPicture(imagePromiseCb, ctx);
+                    this.sendPicture(ctx.picSource, ctx);
                 }
             });
         });
@@ -42,13 +45,23 @@ module.exports = class ReplyBot {
         ctx.reply('Hello human, may I show you some cute doggos?');
     }
 
-    sendPicture(cb, ctx) {
+    sendPicture(picSource, ctx) {
         let loadingId;
 
         ctx.reply('...', { disable_notification: true })
             .then(message => loadingId = message.message_id)
-            .then(() => cb())
-            .then(picture => ctx.replyWithPhoto({ url: picture }, { caption: 'Isn\'t that a cute one?' }))
-            .then(() => ctx.deleteMessage(loadingId));
+            .then(() => picSource.getRandom())
+            .then(picture => {
+                const replyCb = picSource.getPicType() === ImageApi.PicType.gif ? ctx.replyWithVideo
+                    : ctx.replyWithPhoto;
+
+                replyCb({ url: picture }, { caption: picSource.getCredits() });
+            })
+            .then(() => ctx.deleteMessage(loadingId))
+            .then(() => ctx.reply('Isn\'t that a cute one?'))
+            .catch(error => {
+                console.error('FATAL', picSource.constructor.name, error.message);
+                ctx.reply('Sorry, the doggos went walkies. Try again later.');
+            });
     }
 };
