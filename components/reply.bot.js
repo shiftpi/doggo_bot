@@ -8,6 +8,10 @@ module.exports = class ReplyBot {
 
     start(picSourceCb, textRecogCb) {
         this.bot.use((ctx, next) => {
+            if (!ctx.message.text) {
+                return;
+            }
+
             return textRecogCb(ctx.message.text).then(score => {
                 const date = new Date(ctx.message.date * 1000);
 
