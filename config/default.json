@@ -5,5 +5,8 @@
   "azure": {
     "region": "westeurope.api.cognitive.microsoft.com",
     "key": ""
+  },
+  "giphy": {
+    "key": ""
   }
 }
