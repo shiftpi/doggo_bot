@@ -31,11 +31,11 @@ module.exports = class ReplyBot {
 
         this.bot.hears(/.*/, ctx => {
             if (ctx.happyScore < 0.33) {
-                ctx.reply('How bad. Do you give me another chance');
+                ctx.reply(this.getNoMessage());
             } else if (ctx.happyScore < 0.66) {
-                ctx.reply('You\'re not happy as any cute doggo. Do you give me another chance?');
+                ctx.reply('Are you happy or not? I\'m not sure');
             } else {
-                ctx.reply('Yeay, you cute doggo lover... Here is one');
+                ctx.reply(this.getYesMessage());
                 this.sendPicture(ctx.picSource, ctx);
             }
         });
@@ -50,14 +50,14 @@ module.exports = class ReplyBot {
     sendPicture(picSource, ctx) {
         let loadingId;
 
-        ctx.reply('...', { disable_notification: true })
+        ctx.reply('Give me a sec 🐶🐶🐶', { disable_notification: true })
             .then(message => loadingId = message.message_id)
             .then(() => picSource.getRandom())
             .then(picture => {
                 const replyCb = picSource.getPicType() === ImageApi.PicType.gif ? ctx.replyWithVideo
                     : ctx.replyWithPhoto;
 
-                replyCb({ url: picture }, { caption: picSource.getCredits() });
+                return replyCb({ url: picture }, { caption: picSource.getCredits() });
             })
             .then(() => ctx.deleteMessage(loadingId))
             .then(() => ctx.reply('Isn\'t that a cute one?'))
@@ -65,5 +65,29 @@ module.exports = class ReplyBot {
                 console.error('FATAL', picSource.constructor.name, error.message);
                 ctx.reply('Sorry, the doggos went walkies. Try again later.');
             });
+    }
+
+    getYesMessage() {
+        const messages = [
+            'Yeay, you cute doggo lover... Here is one',
+            'Here you are!',
+            'Wuhu, look at this cute doggo',
+            'And another cute doggo',
+            'That\'s a cute one...'
+        ];
+
+        return messages[Math.floor(Math.random() * messages.length)];
+    }
+
+    getNoMessage() {
+        const messages = [
+            'How bad. Do you give me another chance?',
+            'I\'m sorry to hear that. Shall I try again?',
+            'Oh no... Please give me another chance',
+            'Uh that hurts. Please let me try again',
+            'Ok, that\'s sad. But if human wishes I\'ll try again'
+        ];
+
+        return messages[Math.floor(Math.random() * messages.length)];
     }
 };
