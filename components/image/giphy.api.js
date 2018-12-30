@@ -8,7 +8,9 @@ module.exports = class GiphyApi extends ImageApi {
     }
 
     getRandom(iterationCnt) {
-        const offset = Math.round(Math.random() * 10000000);
+        const limit = 100;
+        const position = Math.floor(Math.random() * limit);
+
         iterationCnt = iterationCnt === undefined ? 0 : iterationCnt;
 
         return request({
@@ -16,17 +18,17 @@ module.exports = class GiphyApi extends ImageApi {
             qs: {
                 api_key: this.apiKey,
                 q: 'cute dog',
-                limit: 1,
-                offset: offset
+                limit: limit,
+                offset: 0
             },
             json: true
         }).then(response => {
-            if (response.pagination.count > 0) {
-                return response.data[0].images.original.url;
-            } else if (iterationCnt < 3) {
-                return this.getRandom(iterationCnt++);
+            if (response.pagination.count >= position + 1) {
+                return response.data[position].images.original.url;
+            } else if (response.pagination.count > 0) {
+                return response.data[response.pagination.count - 1].images.original.url;
             } else {
-                return null;
+                return this.getRandom(iterationCnt++);
             }
         });
     }
