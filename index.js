@@ -1,6 +1,6 @@
 const ReplyBot = require('./components/reply.bot');
 const UnsplashApi = require('./components/image/unsplash.api');
-const GiphyApi = require('./components/image/giphy.api');
+const TenorApi = require('./components/image/tenor.api');
 const AzureApi = require('./components/analytics/azure.api');
 const config = require('config');
 
@@ -11,7 +11,7 @@ const source = () => {
     if (Math.round(Math.random() * 10) % 2 === 0) {
         return new UnsplashApi();
     } else {
-        return new GiphyApi(config.get('giphy.key'));
+        return new TenorApi(config.get('tenor.key'));
     }
 };
 

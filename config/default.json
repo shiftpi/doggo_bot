@@ -6,7 +6,7 @@
     "region": "westeurope.api.cognitive.microsoft.com",
     "key": ""
   },
-  "giphy": {
+  "tenor": {
     "key": ""
   }
 }
