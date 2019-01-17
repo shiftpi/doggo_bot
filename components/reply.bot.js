@@ -1,9 +1,12 @@
 const Telegraf = require('telegraf');
+const session = require('telegraf/session');
+const sha256 = require('js-sha256');
 const ImageApi = require('./image/image.api');
 
 module.exports = class ReplyBot {
     constructor(botToken) {
         this.bot = new Telegraf(botToken);
+        this.bot.use(session());
     }
 
     start(picSourceCb, textRecogCb) {
@@ -52,7 +55,26 @@ module.exports = class ReplyBot {
 
         ctx.reply('Give me a sec 🐶🐶🐶', { disable_notification: true })
             .then(message => loadingId = message.message_id)
-            .then(() => picSource.getRandom())
+            .then(async () => {
+                if (!session.picHashes) {
+                    session.picHashes = [];
+                }
+
+                let picture;
+                let hash;
+
+                for (let i = 0; i < 5; i++) {
+                    picture = await picSource.getRandom();
+                    hash = sha256(picture);
+
+                    if (!session.picHashes.includes(hash)) {
+                        break;
+                    }
+                }
+
+                session.picHashes.push(hash);
+                return picture;
+            })
             .then(picture => {
                 const replyCb = picSource.getPicType() === ImageApi.PicType.gif ? ctx.replyWithVideo
                     : ctx.replyWithPhoto;
