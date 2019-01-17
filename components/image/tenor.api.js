@@ -19,7 +19,7 @@ module.exports = class TenorApi extends ImageApi {
                 limit: 1
             },
             json: true
-        }).then(response => response.results[0].media[0].gif.url);
+        }).then(response => response.results[0].media[0].mp4.url);
     }
 
     getCredits() {
