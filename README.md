@@ -1,3 +1,5 @@
+> :warning: This repository is no longer maintained
+
 # Doggo Bot
 Cute doggos on Telegram
 
